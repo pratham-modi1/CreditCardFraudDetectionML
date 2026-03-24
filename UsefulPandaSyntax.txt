@@ -1,0 +1,41 @@
+#pd.read_csv("filename","utf-8")   o read from external file u dont have to convert it to dataframe
+#pd.Dataframe(apple)  if u wrote data in code u have to convert it to dataframe
+#df.to_json("filename.json") to save dataframe to external file
+#df.head(n)
+#df.info()     info vs describe
+#df.describe() 
+#df[["col1","col2"]]  
+#df[(df["Runs"]>349) | (df["Teams"]=="kkr")] 
+#df.shape 
+#df.columns
+#df["new col"] = df["old col"] * 0.1
+#df.reset_index(Drop=True,inplace=True)
+
+**#df.insert[ index, colname, [data]]
+
+**#df.drop(columns = ["colname","colname2"],inplace=True)
+
+**# df.loc[0,"Salary"] = 1
+# df["a"] = df["a"]+ 10 
+#df["Salary"].mean() 
+
+**#df.sort_values(by=["Salary","Age"], ascending=[False,True], inplace= True)
+#.groupby(Col to be grouped by)[Col on which mathematial ops performed]
+#df.groupby("Age").count() 
+#df.isnull()
+#df.dropna(axis=0,inplace=True)
+#df["Age"].fillna(df["Age"].mean(), inplace=True)  
+
+**#df["Age"].interpolate(method="linear",axis=0,inplace=True)
+#pd.concat([df1, df2], axis=1 ) 
+#.merge(df1, df2, on="col name",how="type of join")
+
+#df["date"] = pd.to_datetime(df["date"])
+#df["month"] = df["date"].dt.to_period("M")
+
+**#pivot_df = df.pivot_table(
+#    index=["date", "project"],       # MultiIndex
+#   columns="programmer",            # Programmers as columns
+#    values="time",                   # Their work hours
+#    aggfunc="sum"                    # In case of duplicates
+#)
