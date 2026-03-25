@@ -1,0 +1,224 @@
+SHOULD I DO ALL 25 PREPROCESSING STEPS BEFORE EDA? No.
+Only do basic preprocessing first:
+- Data inspection
+- Handle missing values
+- Remove duplicates
+- Basic transformations (like scaling, log if obvious)
+
+Then move to EDA.
+EDA will tell you:
+- What features matter
+- What needs more transformation
+- What to keep or drop
+
+Key Rule:
+EDA → then further preprocessing (not before)
+Conclusion:
+Current preprocessing is enough. Move to EDA.
+
+ML PREPROCESSING MASTER CHECKLIST (BASIC → ADVANCED WITH SYNTAX)
+
+------------------------------------------------------------
+1. BASIC INSPECTION
+------------------------------------------------------------
+df.shape                # rows, columns
+df.head()               # first 5 rows
+df.tail()               # last 5 rows
+df.info()               # data types + nulls
+df.describe()           # statistical summary
+
+------------------------------------------------------------
+2. MISSING VALUES
+------------------------------------------------------------
+df.isnull().sum()
+
+# Fill examples:
+df['col'].fillna(df['col'].mean(), inplace=True)
+df['col'].fillna(df['col'].median(), inplace=True)
+df['col'].fillna(df['col'].mode()[0], inplace=True)
+
+# Drop (if necessary):
+df.dropna(inplace=True)
+
+------------------------------------------------------------
+3. DUPLICATES
+------------------------------------------------------------
+df.duplicated().sum()
+df = df.drop_duplicates()
+
+------------------------------------------------------------
+4. TARGET DISTRIBUTION
+------------------------------------------------------------
+df['target'].value_counts()
+df['target'].value_counts(normalize=True)
+
+------------------------------------------------------------
+5. DATA TYPES
+------------------------------------------------------------
+df.dtypes
+
+# Convert:
+df['col'] = df['col'].astype('category')
+df['col'] = pd.to_numeric(df['col'], errors='coerce')
+
+------------------------------------------------------------
+6. FEATURE DISTRIBUTION
+------------------------------------------------------------
+df.hist(figsize=(10,8))
+
+# Single column:
+df['col'].hist(bins=50)
+
+------------------------------------------------------------
+7. SKEWNESS CHECK
+------------------------------------------------------------
+df.skew()
+
+------------------------------------------------------------
+8. SKEWNESS HANDLING
+------------------------------------------------------------
+import numpy as np
+
+df['col'] = np.log1p(df['col'])     # log transform
+df['col'] = np.sqrt(df['col'])      # sqrt transform
+
+------------------------------------------------------------
+9. FEATURE SCALING
+------------------------------------------------------------
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
+
+scaler = StandardScaler()
+df['col'] = scaler.fit_transform(df[['col']])
+
+# Alternatives:
+MinMaxScaler()
+RobustScaler()
+
+------------------------------------------------------------
+10. OUTLIER HANDLING
+------------------------------------------------------------
+# Visual:
+import seaborn as sns
+sns.boxplot(x=df['col'])
+
+# Clipping:
+df['col'] = np.clip(df['col'], lower, upper)
+
+------------------------------------------------------------
+11. CORRELATION ANALYSIS
+------------------------------------------------------------
+corr = df.corr()
+corr['target'].sort_values()
+
+------------------------------------------------------------
+12. TIME FEATURE EXTRACTION
+------------------------------------------------------------
+df['Hour'] = (df['Time']/3600) % 24
+df['Day'] = df['Time'] // (3600*24)
+
+------------------------------------------------------------
+13. CYCLIC FEATURES (IMPORTANT)
+------------------------------------------------------------
+import numpy as np
+
+df['Hour_sin'] = np.sin(2*np.pi*df['Hour']/24)
+df['Hour_cos'] = np.cos(2*np.pi*df['Hour']/24)
+
+------------------------------------------------------------
+14. FEATURE INTERACTIONS
+------------------------------------------------------------
+df['A_B'] = df['A'] * df['B']
+df['A_div_B'] = df['A'] / (df['B'] + 1e-5)
+
+------------------------------------------------------------
+15. DOMAIN FEATURES
+------------------------------------------------------------
+# Example:
+df['ratio'] = df['A'] / (df['B'] + 1e-5)
+df['difference'] = df['A'] - df['B']
+
+------------------------------------------------------------
+16. CLASS IMBALANCE HANDLING
+------------------------------------------------------------
+from imblearn.over_sampling import SMOTE
+
+X = df.drop('target', axis=1)
+y = df['target']
+
+smote = SMOTE()
+X_res, y_res = smote.fit_resample(X, y)
+
+------------------------------------------------------------
+17. FEATURE SELECTION
+------------------------------------------------------------
+corr = df.corr()['target'].abs()
+important = corr[corr > 0.1]
+
+------------------------------------------------------------
+18. PIPELINES (CLEAN APPROACH)
+------------------------------------------------------------
+from sklearn.pipeline import Pipeline
+
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('model', LogisticRegression())
+])
+
+------------------------------------------------------------
+19. DIMENSIONALITY REDUCTION
+------------------------------------------------------------
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components=5)
+X_pca = pca.fit_transform(X)
+
+------------------------------------------------------------
+20. DISTRIBUTION ANALYSIS
+------------------------------------------------------------
+df.skew()
+df.kurt()
+
+------------------------------------------------------------
+21. CATEGORICAL ENCODING
+------------------------------------------------------------
+# One-hot:
+pd.get_dummies(df, columns=['col'])
+
+# Label:
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df['col'] = le.fit_transform(df['col'])
+
+------------------------------------------------------------
+22. BINNING
+------------------------------------------------------------
+df['binned'] = pd.cut(df['col'], bins=5)
+
+------------------------------------------------------------
+23. ADVANCED TRANSFORMATIONS
+------------------------------------------------------------
+from sklearn.preprocessing import PowerTransformer
+
+pt = PowerTransformer(method='yeo-johnson')
+df['col'] = pt.fit_transform(df[['col']])
+
+------------------------------------------------------------
+24. DISTRIBUTION ALIGNMENT
+------------------------------------------------------------
+# Try making feature normal-like
+df['col'] = np.log1p(df['col'])
+
+------------------------------------------------------------
+25. DATA LEAKAGE CHECK
+------------------------------------------------------------
+# Ensure:
+# - No future data in training
+# - Target not used in feature creation
+# - Split before scaling
+
+from sklearn.model_selection import train_test_split
+
+X = df.drop('target', axis=1)
+y = df['target']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)

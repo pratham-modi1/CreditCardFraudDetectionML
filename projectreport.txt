@@ -1,0 +1,40 @@
+Stage1 : preprocessing and info abt each row and column
+
+1. Time tells us abt relative timing of transactions(no of "seconds" since first transaction), useful 
+   as frauds often happen in bursts ie multiple quick transactions. 
+2. Amount tells us abt money transferred, for frauds the money transferred maybe unusually high or low
+3. Class is target variable that determines whether fraud[1] or not[0]
+4. V1 to V28 had original sensitive data ie card name, location, merchant etc. all of it was converted
+   to numbers using principal component analysis. Each V is combination of ALL features
+   For eg, V1 = 0.3*location + 0.9*time + merchant + amount + behavior patterns... 
+   They are uncorrelated, ordered by importance (V1 most important variance) and cannot be interpreted
+   directly but contain useful patterns for ML
+
+Dataset is very clean already and does not contain any null or categorical values as they're already
+converted to V. 
+Amount and Time are moderately/less important compared to other V indicators but do need feature 
+scaling so that your model doesnt assume that these are most important but not rn that can be done 
+later, perhaps after log transform and some other operations(priority 1)
+
+Why? Because: Fraud detection is mostly about patterns, not money
+A ₹10 fraud is still fraud and a ₹10,000 legit purchase is still legit
+So model relies more on: V features (behavior patterns) not just amount
+
+Found 1041 duplicate columns and removed them as duplicate fraud rows can bias model 
+IF more duplicate non fraud then biased towards non fraud, IF more duplicate fraud then biased 
+towards fraud. So we clear it for starters!
+
+Now we looked at histogram of Amounts and observed that majority values are small and few are high 
+this distortion can make our model biased so we gotta fix it
+We can do this by log transform, it compresses large values and spreads small ones!
+Example:
+| Original | After log |
+| -------- | --------- |
+| 10       | 2.3       |
+| 100      | 4.6       |
+| 1000     | 6.9       |
+
+After doing log transform we can scale it using standard scaling
+
+Currently time column gives us order but thats meaningless as fraud doesnt depend on how late 
+it in dataset. Frauds happen at unusual hours

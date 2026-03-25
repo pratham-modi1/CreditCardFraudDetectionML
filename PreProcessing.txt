@@ -1,0 +1,23 @@
+When you see ANY dataset, think:
+
+Step 1: Is it clean?
+nulls
+duplicates
+
+Step 2: What is the distribution?
+skew
+imbalance
+
+Step 3: What features actually represent behavior?
+extract
+transform
+
+Step 4: Will model understand this properly?
+scaling
+encoding
+
+Step 5: Can I make it smarter?
+interactions
+cyclic
+domain logic
+
