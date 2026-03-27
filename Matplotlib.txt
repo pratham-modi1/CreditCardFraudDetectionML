@@ -1,0 +1,33 @@
+plt.xlabel()
+plt.title()
+plt.legend(loc, fontsize)
+plt.grid(color,linestyle,linewidth) 
+plt.xticks(ticks, labels, rotation, fontsize) 
+plt.show()
+plt.savefig('filename.extension', dpi=value, bbox_inches='tight')
+
+
+plt.bar(x,y,color,label)
+plt.hist(data,bins,color,edgecolor,[rwidth = 0.8]) 
+plt.pie(values,labels,colors,autopct,explode=(0,0.1,0,0.1))
+plt.plot(x,y,color,linestyle,linewidth,marker,label)
+plt.scatter(x,y,color,marker,s,label)   s=size
+
+
+
+
+plt.subplot(nrows, ncols, index)
+fig, ax = plt.subplots(nrows, ncols, figsize=(width, height))
+
+plt.tight_layout()
+fig.suptitle('Main Title', fontsize=value)
+
+ax.plot("x", "y", color, linestyle, linewidth, marker, label) 
+ax[1].set_title('Subplot Title')
+
+plt.subplots_adjust(left, right, top, bottom, wspace, hspace)
+ax.text(4, 0.5, 'Simple text')
+
+ax.annotate('This is the peak!', xy=(x, y), xytext=(x_text, y_text),arrowprops=dict(facecolor='black', arrowstyle='->'))
+
+fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, wspace=0.4, hspace=0.4)
