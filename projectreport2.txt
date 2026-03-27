@@ -253,3 +253,204 @@ Evaluation ensures it works in reality.
 🔥 (Optional strong closing line for report)
 
 The goal is not to find the most complex model, but to find the simplest model that captures the underlying patterns effectively.
+
+
+
+🧠 1. Is your overall ML approach correct?
+
+You said:
+
+“Pick a model → test → improve → try next model”
+
+✅ This is mostly correct, but slightly incomplete
+
+Right now your approach is:
+
+Pick model → Train → Evaluate → Try another
+
+👉 This is okay for beginners, but here’s the real ML workflow:
+
+🚀 Correct ML Thinking Pipeline
+Step 1: Understand problem
+Classification? ✅
+Imbalanced? ✅
+Probability needed? ✅
+
+👉 You did this WELL.
+
+Step 2: Define success metric BEFORE model
+
+👉 This is where you slightly rushed
+
+You correctly said:
+
+Recall is important
+
+But better framing is:
+
+“I want high recall, but not terrible precision → so I’ll track F1 + Recall”
+
+Step 3: Start with SIMPLE baseline
+
+👉 Logistic Regression
+
+NOT random — it’s chosen because:
+
+Works well on tabular data
+Fast
+Interpretable
+Step 4: Evaluate properly
+Not just accuracy ❌
+Use:
+Recall
+F1
+Confusion Matrix
+Step 5: Improve WITHOUT changing model
+
+👉 This is where real ML begins
+
+Change threshold
+Handle imbalance
+Tune hyperparameters
+Step 6: THEN try complex models
+Tree
+Random Forest
+Boosting
+🎯 Final verdict on your approach
+
+👉 You are 80% correct
+
+🔥 Upgrade needed:
+
+Don’t jump model → model
+First extract maximum performance from one model
+
+🧠 2. What is class_weight='balanced'?
+
+This is VERY important — don’t skip.
+
+💡 Problem: Imbalance
+
+Your dataset:
+
+Legit: 99.8%
+Fraud: 0.2%
+❌ What model does normally
+
+Model thinks:
+
+“If I predict everything as legit → I’m 99.8% correct 😎”
+
+👉 So it ignores fraud
+
+🔥 What balanced does
+
+It tells the model:
+
+“Hey — fraud is rare, but VERY important. Treat mistakes on fraud as costly.”
+
+🧠 Internally (simple idea)
+
+It gives more weight to fraud class
+
+Example:
+
+Legit mistake = cost 1
+Fraud mistake = cost 100
+
+👉 So model tries harder to catch fraud
+
+🎯 Intuition
+
+Without balanced:
+
+Model lazy → ignores fraud
+
+With balanced:
+
+Model alert → tries to detect fraud
+🧠 3. What is predict_proba?
+
+This is the most important concept you learned today.
+
+💡 Normal prediction
+y_pred = model.predict(X_test)
+
+Output:
+
+0, 1, 0, 0, 1
+
+👉 Hard decision
+
+💡 But internally model thinks like this:
+Transaction A → 0.1 fraud  
+Transaction B → 0.8 fraud  
+Transaction C → 0.4 fraud  
+🔥 predict_proba gives THIS
+y_prob = model.predict_proba(X_test)
+
+Output:
+
+[[0.9, 0.1],
+ [0.2, 0.8],
+ [0.6, 0.4]]
+
+👉 Meaning:
+
+10% fraud
+80% fraud
+40% fraud
+🧠 Then how does model decide 0 or 1?
+
+Default rule:
+
+If probability > 0.5 → fraud (1)
+else → legit (0)
+
+⚠️ BIG INSIGHT
+
+That 0.5 threshold is arbitrary
+
+👉 You can change it!
+
+🔥 Example
+
+Instead of:
+
+threshold = 0.5
+
+Use:
+
+threshold = 0.3
+
+👉 Now:
+
+More transactions → fraud
+Recall ↑
+Precision ↓
+🎯 Why this matters?
+
+Because earlier you said:
+
+“We want high recall”
+
+👉 THIS is how you actually achieve it
+
+NOT by changing model
+👉 but by changing threshold
+
+🧠 4. Putting it all together
+Your model pipeline now becomes:
+Train Logistic Regression
+Use class_weight='balanced'
+Get probabilities
+Apply threshold
+Evaluate recall
+🔥 Final clarity (VERY IMPORTANT)
+❌ Wrong mindset:
+
+“Which model gives best recall?”
+
+✅ Correct mindset:
+
+“How can I tune my system to maximize recall?”

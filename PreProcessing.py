@@ -146,6 +146,194 @@ legit = df[df['Class'] == 0]
 # plt.show()
 #repeat for all others now
 
-sns.boxplot(x='Class', y='V4', data=df)
-plt.title('v4 vs Class')
-plt.show()
+# sns.boxplot(x='Class', y='V4', data=df)
+# plt.title('v4 vs Class')
+# plt.show()
+
+# -------------------- 9. Model Building --------------------
+
+from sklearn.linear_model import LogisticRegression
+
+# # Create model (handling imbalance)
+model = LogisticRegression(class_weight='balanced', max_iter=1000)
+
+# # Train model
+model.fit(X_train, y_train)
+
+
+# # -------------------- 10. Predictions --------------------
+
+# # Predict on FULL test set
+y_pred = model.predict(X_test)
+
+# # Probabilities (important for future threshold tuning)
+y_prob = model.predict_proba(X_test)[:, 1]
+
+
+# # -------------------- 11. Evaluation --------------------
+
+# from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
+
+# print("Accuracy:", accuracy_score(y_test, y_pred))
+
+# print("Precision:", precision_score(y_test, y_pred))
+
+# print("Recall:", recall_score(y_test, y_pred))
+
+# print("F1 Score:", f1_score(y_test, y_pred))
+
+# print("\nConfusion Matrix:")
+# print(confusion_matrix(y_test, y_pred))
+
+# print("\nClassification Report:")
+# print(classification_report(y_test, y_pred))
+
+# import numpy as np
+# from sklearn.metrics import precision_score, recall_score, f1_score
+
+# thresholds = np.arange(0.1, 0.9, 0.05)
+
+# best_f1 = 0
+# best_threshold = 0
+
+# print("Threshold | Precision | Recall | F1")
+# print("-------------------------------------")
+
+# for t in thresholds:
+
+#     y_pred_t = []
+#     for prob in y_prob:
+#         if prob >= t:
+#             y_pred_t.append(1)
+#         else:
+#             y_pred_t.append(0)
+
+#     p = precision_score(y_test, y_pred_t)
+#     r = recall_score(y_test, y_pred_t)
+#     f1 = f1_score(y_test, y_pred_t)
+
+#     print(f"{t:.2f}      | {p:.3f}     | {r:.3f}  | {f1:.3f}")
+
+#     if f1 > best_f1:
+#         best_f1 = f1
+#         best_threshold = t
+
+# print("\nBest Threshold (F1-based):", best_threshold)
+
+# -------------------- 12. Decision Tree Model --------------------
+
+# from sklearn.tree import DecisionTreeClassifier
+
+# # Create model (limit depth to prevent overfitting)
+# dt_model = DecisionTreeClassifier(
+#     max_depth=5,              # control complexity
+#     class_weight='balanced',  # handle imbalance
+#     random_state=42
+# )
+
+# # Train model
+# dt_model.fit(X_train, y_train)
+
+
+# # -------------------- 13. Predictions --------------------
+
+# y_pred_dt = dt_model.predict(X_test)
+
+# # Probabilities (for threshold tuning later)
+# y_prob_dt = dt_model.predict_proba(X_test)[:, 1]
+
+
+# # -------------------- 14. Evaluation --------------------
+
+# from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
+
+# print("Decision Tree Results:\n")
+
+# print("Accuracy:", accuracy_score(y_test, y_pred_dt))
+# print("Precision:", precision_score(y_test, y_pred_dt))
+# print("Recall:", recall_score(y_test, y_pred_dt))
+# print("F1 Score:", f1_score(y_test, y_pred_dt))
+
+# print("\nConfusion Matrix:")
+# print(confusion_matrix(y_test, y_pred_dt))
+
+# print("\nClassification Report:")
+# print(classification_report(y_test, y_pred_dt))
+
+# -------------------- 15. Random Forest Model --------------------
+
+from sklearn.ensemble import RandomForestClassifier
+
+# Create model
+rf_model = RandomForestClassifier(
+    n_estimators=100,        # number of trees
+    max_depth=8,             # control overfitting
+    class_weight='balanced', # handle imbalance
+    random_state=42,
+    n_jobs=-1                # use all CPU cores
+)
+
+# Train model
+rf_model.fit(X_train, y_train)
+
+
+# -------------------- 16. Predictions --------------------
+
+y_pred_rf = rf_model.predict(X_test)
+
+# Probabilities for threshold tuning
+y_prob_rf = rf_model.predict_proba(X_test)[:, 1]
+
+
+# -------------------- 17. Evaluation --------------------
+
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
+
+# print("Random Forest Results:\n")
+
+# print("Accuracy:", accuracy_score(y_test, y_pred_rf))
+# print("Precision:", precision_score(y_test, y_pred_rf))
+# print("Recall:", recall_score(y_test, y_pred_rf))
+# print("F1 Score:", f1_score(y_test, y_pred_rf))
+
+# print("\nConfusion Matrix:")
+# print(confusion_matrix(y_test, y_pred_rf))
+
+# print("\nClassification Report:")
+# print(classification_report(y_test, y_pred_rf))
+
+import numpy as np
+from sklearn.metrics import precision_score, recall_score, f1_score
+
+thresholds = np.arange(0.2, 0.7, 0.05)
+
+print("Threshold | Precision | Recall | F1")
+print("-------------------------------------")
+
+best_choice = None
+
+for t in thresholds:
+
+    y_pred_t = []
+    for prob in y_prob_rf:
+        if prob >= t:
+            y_pred_t.append(1)
+        else:
+            y_pred_t.append(0)
+
+    p = precision_score(y_test, y_pred_t)
+    r = recall_score(y_test, y_pred_t)
+    f1 = f1_score(y_test, y_pred_t)
+
+    print(f"{t:.2f}      | {p:.3f}     | {r:.3f}  | {f1:.3f}")
+
+    # Store good balance (you can tweak this condition)
+    if r >= 0.80 and p >= 0.60:
+        best_choice = (t, p, r, f1)
+
+if best_choice:
+    print("\nGood Balanced Threshold Found:")
+    print("Threshold:", best_choice[0])
+    print("Precision:", best_choice[1])
+    print("Recall:", best_choice[2])
+    print("F1:", best_choice[3])

@@ -1,0 +1,433 @@
+Threshold Selection Strategy
+
+After training the Logistic Regression model, it was observed that:
+
+Recall was high (~87%), meaning most fraud cases were detected
+Precision was very low (~5%), indicating a large number of false positives
+
+This highlighted the precision-recall trade-off, where improving one metric leads to degradation in the other.
+
+Need for Threshold Tuning
+
+By default, the model uses a threshold of 0.5 to classify transactions. However, this threshold is not optimal for imbalanced datasets like fraud detection.
+
+Instead of using a fixed threshold, multiple threshold values were evaluated.
+
+Methodology
+Predicted probabilities (predict_proba) were used
+Threshold values from 0.1 to 0.9 were tested
+For each threshold:
+Precision, Recall, and F1 Score were calculated
+Selection Criteria
+
+Two approaches were considered:
+
+F1 Score Maximization
+Provides a balance between precision and recall
+Best threshold chosen where F1 score is highest
+Recall-Constrained Selection
+Since missing fraud is critical, recall was prioritized
+Threshold selected where:
+Recall remains high (≥ 80%)
+Precision improves compared to baseline
+Conclusion
+
+Threshold tuning significantly improved model performance by balancing fraud detection and false alarms.
+
+This step demonstrates that:
+
+Model performance is not only dependent on the algorithm, but also on decision thresholds.
+
+5. Threshold Tuning Strategy
+
+To improve model performance, different threshold values were evaluated.
+
+Method
+Used predicted probabilities (predict_proba)
+Tested multiple threshold values (0.1 to 0.9)
+For each threshold:
+Converted probabilities into class labels
+Calculated Precision, Recall, and F1 Score
+Decision Criteria
+
+Two valid strategies were considered:
+
+🔹 1. F1-Based Selection (Balanced Approach)
+Choose threshold where F1 score is maximum
+Ensures balance between precision and recall
+🔹 2. Recall-Focused Selection (Fraud-Sensitive Approach)
+Maintain high recall (e.g., ≥ 80%)
+Among those thresholds, choose one with better precision
+🧠 Insight
+
+The optimal threshold depends on the application requirements.
+
+Fraud-heavy system → prioritize recall
+Business-friendly system → balance precision and recall
+6. Key Learning
+
+Model performance is not only determined by the algorithm, but also by the classification threshold.
+
+7. Evaluation of Current Model
+Strengths:
+Captures most fraud cases
+Works well as a baseline
+Fast and interpretable
+Limitations:
+Very low precision
+Cannot model complex feature interactions
+Assumes linear relationship between features and output
+8. Transition to Next Model
+
+Instead of randomly trying models, the next model should be selected based on:
+
+Limitations of the current model
+
+Identified Limitation
+
+Logistic Regression:
+
+Learns linear relationships
+Cannot capture interactions like:
+“Feature A AND Feature B together indicate fraud”
+Required Capability in Next Model
+
+The next model should:
+
+Capture non-linear relationships
+Learn feature interactions
+Improve precision while maintaining recall
+9. Selection of Next Model
+
+Based on the above reasoning, the next category of models considered is:
+
+Tree-based models
+
+Why Tree-Based Models?
+Can model non-linear decision boundaries
+Automatically capture feature interactions
+Do not assume linearity
+Often perform well on tabular data
+Candidate Models
+Decision Tree
+Random Forest
+Gradient Boosting
+10. Updated Modeling Strategy
+
+The workflow for further modeling is:
+
+Step 1: Train model
+Step 2: Handle imbalance
+Step 3: Predict probabilities
+Step 4: Tune threshold
+Step 5: Evaluate (Recall, Precision, F1)
+Step 6: Compare with previous model
+
+
+
+..
+📄 Threshold Optimization and Model Comparison
+1. Threshold Optimization for Logistic Regression
+
+After training the Logistic Regression model, it was observed that while recall was high, precision was extremely low due to a large number of false positives. This indicated that the default classification threshold (0.5) was not suitable for this imbalanced dataset.
+
+🔍 Motivation for Threshold Tuning
+
+Logistic Regression outputs probabilities, not direct class labels. By default:
+
+If probability ≥ 0.5 → Fraud
+Else → Legitimate
+
+However, in fraud detection:
+
+This threshold often leads to excessive false positives
+Therefore, threshold tuning is necessary to balance precision and recall
+⚙️ Methodology
+Predicted probabilities were obtained using predict_proba
+Threshold values ranging from 0.1 to 0.85 were evaluated
+For each threshold:
+Predictions were generated based on the threshold
+Precision, Recall, and F1 Score were calculated
+📊 Observations
+Lower thresholds (0.1–0.4):
+Very high recall
+Extremely low precision
+Model becomes overly sensitive
+Mid thresholds (0.5–0.7):
+Gradual improvement in precision
+Slight reduction in recall
+Higher thresholds (0.75–0.85):
+Significant increase in precision
+Recall remains relatively high
+✅ Best Threshold Selection
+
+Based on F1-score maximization:
+
+Best Threshold = 0.85
+📈 Final Performance (Logistic Regression)
+Precision: 20.4%
+Recall: 83.2%
+F1 Score: 32.8%
+🧠 Interpretation
+The model successfully detects a large proportion of fraud cases (high recall)
+Precision improved significantly compared to the default threshold
+False positives are still present but reduced
+🎯 Key Insight
+
+Adjusting the classification threshold significantly improves model performance without changing the underlying algorithm.
+
+2. Transition to Decision Tree Model
+
+Although Logistic Regression performed well, it assumes a linear relationship between features and the target.
+
+To explore whether capturing non-linear patterns and feature interactions could improve performance, a Decision Tree model was implemented.
+
+3. Decision Tree Model Performance
+📊 Results:
+Precision: 3.88%
+Recall: 85.26%
+F1 Score: 7.43%
+Confusion Matrix Summary:
+High number of false positives
+Majority of fraud cases detected
+Significant misclassification of legitimate transactions
+4. Interpretation of Decision Tree Results
+🔍 Observations:
+Recall remained high, similar to Logistic Regression
+Precision dropped significantly
+False positives increased substantially
+⚠️ Key Issue
+
+The Decision Tree model:
+
+Became overly aggressive in classifying transactions as fraud
+
+This resulted in:
+
+Many legitimate transactions being flagged incorrectly
+Poor precision despite high recall
+🧠 Reasoning
+
+Decision Trees:
+
+Capture non-linear patterns
+But are highly sensitive to noise and class imbalance
+Tend to overfit, especially when minority class is emphasized
+📉 Comparison with Logistic Regression
+Metric	Logistic (Tuned)	Decision Tree
+Precision	20.4%	3.88%
+Recall	83.2%	85.2%
+F1 Score	32.8%	7.43%
+✅ Conclusion
+
+Logistic Regression significantly outperformed the Decision Tree in terms of overall balance (F1 Score) and precision.
+
+While Decision Tree slightly improved recall, the increase in false positives made it less practical.
+
+5. Final Insight and Next Step
+
+The experiment demonstrates that:
+
+Increasing model complexity does not guarantee better performance
+Simpler models can generalize better on structured tabular data
+
+However, since Decision Trees are unstable individually, the next logical step is to use:
+
+Random Forest, which combines multiple trees to improve stability and reduce overfitting.
+
+🔥 Final Summary
+
+Logistic Regression with threshold tuning provided the best balance between fraud detection and false alarms, while Decision Tree introduced excessive noise.
+
+Future improvements will focus on ensemble methods to retain non-linear learning while improving stability.
+
+📄 Transition from Decision Tree to Random Forest and Depth Analysis
+1. Motivation for Moving Beyond Decision Tree
+
+The Decision Tree model was implemented to capture non-linear relationships and feature interactions that Logistic Regression could not model.
+
+However, the results showed:
+
+High recall (~85%)
+Extremely low precision (~3.8%)
+Large number of false positives
+⚠️ Problem Identified
+
+The Decision Tree was:
+
+Overly sensitive and unstable, leading to excessive false alarms
+
+Despite limiting the tree depth (max_depth = 5), the model still exhibited overfitting-like behavior.
+
+2. Depth Dilemma: Why Did a Shallow Tree Overfit?
+
+At first glance, it may seem contradictory that:
+
+A shallow tree (depth = 5) overfits
+While a deeper Random Forest (depth = 8) performs better
+🧠 Key Insight
+
+Overfitting is not controlled by depth alone — it is strongly influenced by model variance.
+
+📌 Decision Tree Behavior
+A Decision Tree is a single model
+It learns from the entire dataset
+It creates hard decision boundaries
+It is highly sensitive to:
+Noise
+Class imbalance
+Rare patterns
+📉 Result
+
+Even with limited depth, the tree:
+
+Overreacted to minority class patterns
+Produced many false positives
+Failed to generalize well
+3. Introduction of Random Forest
+
+To address the instability of a single tree, a Random Forest model was introduced.
+
+🔧 Key Mechanisms of Random Forest
+Bootstrap Sampling
+Each tree is trained on a different subset of data
+Feature Randomness
+Each split considers a subset of features
+Ensemble Averaging
+Final prediction is based on aggregation of multiple trees
+🎯 Effect
+
+Random Forest reduces variance and stabilizes predictions
+
+4. Why Random Forest Works Better Even with Greater Depth
+
+Although each tree in the Random Forest may be deeper (max_depth = 8), the model:
+
+Does not rely on a single tree
+Averages multiple decision boundaries
+Cancels out noise and overfitting tendencies
+🧠 Core Insight
+Model	Behavior
+Decision Tree	High variance (unstable)
+Random Forest	Low variance (stable via averaging)
+📌 Conclusion
+
+Depth controls model complexity, but ensemble methods control variance.
+
+Thus, Random Forest can safely use deeper trees while still generalizing well.
+
+5. Random Forest Model Performance
+📊 Results:
+Accuracy: 99.93%
+Precision: 81.61%
+Recall: 74.73%
+F1 Score: 78.02%
+Confusion Matrix:
+	Predicted Legit	Predicted Fraud
+Actual Legit	56635	16
+Actual Fraud	24	71
+6. Interpretation of Results
+🔍 Key Observations
+1. Precision is Very High (81.6%)
+Most predicted fraud cases are actually fraud
+Very few false positives (only 16)
+2. Recall is Moderate (74.7%)
+Majority of fraud cases are detected
+Some fraud cases (24) are missed
+3. F1 Score is Strong (78%)
+Indicates a good balance between precision and recall
+
+7. Comparison with Previous Models
+Model	Precision	Recall	F1 Score
+Logistic (Tuned)	20.4%	83.2%	32.8%
+Decision Tree	3.8%	85.2%	7.4%
+Random Forest	81.6%	74.7%	78.0%
+8. Final Interpretation
+Logistic Regression:
+High recall but poor precision
+Too many false alarms
+Decision Tree:
+Unstable and overly aggressive
+Worst overall performance
+Random Forest:
+Balanced performance
+High precision and strong F1 score
+Significantly reduced false positives
+9. Final Conclusion
+
+Random Forest provides the best overall performance by effectively balancing fraud detection and minimizing false alarms.
+🧠 Final decision question (IMPORTANT)
+
+👉 What system do YOU want?
+
+Option 1:
+Catch maximum fraud (Logistic)
+Option 2:
+Avoid false alarms (Random Forest)
+🔥 Real-world answer
+
+Banks usually prefer:
+
+Balanced → Random Forest type
+
+lets enhance it more treshold tuning
+
+
+Final Model Optimization using Threshold Tuning
+
+After evaluating the Random Forest model, the initial results showed:
+
+High precision (~81.6%)
+Moderate recall (~74.7%)
+
+This indicated that the model was highly accurate in identifying fraud but was missing some fraudulent transactions.
+
+Motivation
+
+In fraud detection, missing fraudulent transactions (False Negatives) is costly. Therefore, improving recall was prioritized while maintaining acceptable precision.
+
+Methodology
+Predicted probabilities were obtained using predict_proba
+Threshold values between 0.2 and 0.65 were evaluated
+For each threshold:
+Precision, Recall, and F1 Score were calculated
+Optimal Threshold Selection
+
+A balanced threshold was selected based on:
+
+Recall ≥ 80%
+Precision ≥ 70%
+Final Selected Threshold
+Threshold = 0.4
+Final Performance (Random Forest Tuned)
+Precision: 70.4%
+Recall: 80%
+F1 Score: 74.8%
+Interpretation
+The model now detects a higher proportion of fraud cases
+Precision remains strong, ensuring limited false alarms
+The trade-off between fraud detection and false positives is well-balanced
+Key Insight
+
+Threshold tuning enables fine control over model behavior, allowing alignment with real-world requirements without changing the underlying algorithm.
+
+🏆 3. FINAL MODEL COMPARISON TABLE (ADD THIS)
+Model                Precision   Recall   F1 Score
+-------------------------------------------------
+Logistic (tuned)     20.4%       83.2%    32.8%
+Decision Tree        3.8%        85.2%    7.4%
+Random Forest        81.6%       74.7%    78.0%
+RF (tuned) ⭐        70.4%       80.0%    74.8%
+🧠 4. FINAL CONCLUSION (VERY IMPORTANT)
+
+Add this:
+
+Final Conclusion
+
+Among all models, Random Forest with threshold tuning provided the best balance between fraud detection and false alarms.
+
+Logistic Regression achieved high recall but suffered from extremely low precision, while Decision Tree showed unstable behavior due to overfitting.
+
+Random Forest successfully addressed these limitations by reducing variance and improving generalization.
+
+Further improvement was achieved through threshold tuning, demonstrating that model performance depends not only on the algorithm but also on decision strategy.
